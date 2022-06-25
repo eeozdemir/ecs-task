@@ -1,6 +1,7 @@
 import boto3
 import json
 
+print("hello world")
 print("initializing client")
 client=boto3.client("ecs", region_name="us-east-1")
 
