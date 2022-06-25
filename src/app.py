@@ -1,14 +1,21 @@
+import sys
 import boto3
 import json
+import sys
+import os
+import flask
 
-print("hello world")
-print("initializing client")
-client=boto3.client("ecs", region_name="us-east-1")
+def main():
+    print("hello world")
+    print("initializing client")
+    client=boto3.client("ecs", region_name="us-east-1")
 
-print("list services")
+    response = client.update_service(
+            service = "arn:aws:ecs:us-east-1:132248825767:service/hamid-testlab-staging/nginx",
+            desiredCount = 0
+        )
+        
+    print(json.dumps(response, indent=4, default=str))
 
-clusters=services=client.list_clusters()
-print(json.dumps(clusters, indent=4, default=str))
-
-services=client.list_services(cluster="arn:aws:ecs:ap-southeast-1:132248825767:cluster/core-edge")
-print(json.dumps(services, indent=4, default=str))
+if __name__ == "__main__":
+    sys.exit(main())
