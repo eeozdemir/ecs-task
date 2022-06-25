@@ -1,7 +1,11 @@
 name: AWS Deployment
 
+#on:
+#  workflow_dispatch:
 on:
-  workflow_dispatch:
+  push:
+    branches:
+    - 'master'
      
 env:
   AWS_REGION: "us-east-1"                   
