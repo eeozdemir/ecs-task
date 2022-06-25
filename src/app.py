@@ -13,6 +13,7 @@ def main():
     cluster_name = clusters['clusterArns'][1]
 
     response = client.update_service(
+            cluster = "arn:aws:ecs:us-east-1:132248825767:cluster/hamid-testlab-staging",
             service = "arn:aws:ecs:us-east-1:132248825767:service/hamid-testlab-staging/nginx",
             desiredCount = 0
         )
