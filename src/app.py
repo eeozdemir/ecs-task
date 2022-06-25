@@ -2,7 +2,7 @@ import boto3
 import json
 
 print("initializing client")
-client=boto3.client("ecs", region_name="ap-southeast-1")
+client=boto3.client("ecs", region_name="us-east-1")
 
 print("list services")
 
