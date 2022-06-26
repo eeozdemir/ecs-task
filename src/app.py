@@ -48,7 +48,7 @@ def extractRegionFrom(clusterArn: str) -> str:
     return clusterArn.split(":")[3]
 
 def extractServiceArnPrefixFrom(clusterArn: str) -> str:
-    _, vendor, svc, region, accountId, resName=clusterArn.split(".")
+    _, vendor, svc, region, accountId, resName=clusterArn.split(":")
     clusterName=resName.split("/")[1]
     return f"arn:{vendor}:{svc}:{region}:{accountId}:service/{clusterName}/"
 
