@@ -1,5 +1,3 @@
-import sys
-from typing import final
 import boto3
 import json
 import sys
