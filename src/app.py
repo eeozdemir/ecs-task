@@ -6,8 +6,6 @@ import flask
 import time
 from threading import Thread, Lock
 
-from numpy import array
-
 mutex=Lock()
 server=flask.Flask(__name__)
 clusterArn="arn:aws:ecs:us-east-1:132248825767:cluster/hamid-testlab-staging"
