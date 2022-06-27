@@ -167,7 +167,6 @@ def healthz():
 def main() -> int:
     readEnvs()
     server.logger.setLevel(logging.INFO)
-    server.logger.info("hello world")
     Thread(target=workerServiceScanner).start()
     server.run("0.0.0.0", port)
     return 1
