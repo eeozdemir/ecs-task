@@ -4,8 +4,8 @@ name: AWS Deployment
 #  workflow_dispatch:
 on:
   push:
-    branches:
-    - 'main'
+    tags:
+    - 'v*'
      
 env:
   AWS_REGION: "us-east-1"                   

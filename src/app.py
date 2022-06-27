@@ -5,6 +5,7 @@ import os
 import flask
 import time
 from threading import Thread, Lock
+import logging
 
 mutex=Lock()
 server=flask.Flask(__name__)
@@ -77,7 +78,7 @@ def scanServices() -> None:
 
     for page in pages:
         for serviceArn in page['serviceArns']:
-            print(f"checking {serviceArn}")
+            logging.info(f"checking {serviceArn}")
             serviceName=extractServiceNameFrom(serviceArn)
             if not serviceName.startswith(servicePrefix):
                 continue
@@ -95,7 +96,7 @@ def describeService(serviceArn:str, client: any=None) -> any:
     )   
 
 def shutdown(serviceName: str) -> None:
-    print(f"shutting down {serviceArnPrefix+serviceName}")
+    logging.info(f"shutting down {serviceArnPrefix+serviceName}")
     client=boto3.client("ecs", region_name=region)
     client.update_service(
             cluster = clusterArn,
@@ -104,7 +105,7 @@ def shutdown(serviceName: str) -> None:
         )
 
 def start(serviceName: str) -> None:
-    print(f"starting {servicePrefix+serviceName}")
+    logging.info(f"starting {servicePrefix+serviceName}")
     client=boto3.client("ecs", region_name=region)
     client.update_service(
             cluster = clusterArn,
@@ -112,7 +113,7 @@ def start(serviceName: str) -> None:
             desiredCount = 1
         )
 
-def workerServiceScanner():
+def workerServiceScanner() -> None:
     first=True
     while True:
         scanServices()
@@ -121,9 +122,9 @@ def workerServiceScanner():
             first=False
         time.sleep(60)
 
-def workerIdledServiceShutdown():
+def workerIdledServiceShutdown() -> None:
     while True:
-        print(json.dumps(serviceState, indent=4, default=str))
+        logging.info(json.dumps(serviceState, indent=4, default=str))
         for serviceName in serviceState:
             if serviceState[serviceName]["desiredCount"]==0:
                 continue
@@ -140,10 +141,10 @@ def hook(environment:str, posWorker:str):
     try:
         describedService=describeService(serviceArn)
     except:
-        return flask.abort(404)
+        return {"code":404, "message":"service not found"}, 404
     
     if not describedService["services"]:
-        return flask.abort(404)
+        return {"code":404, "message":"service not found"}, 404
 
     oldDesiredCount=describedService["services"][0]["desiredCount"]
     describedService["services"][0]["desiredCount"]=1
@@ -151,10 +152,17 @@ def hook(environment:str, posWorker:str):
     if oldDesiredCount==0:
         start(describedService["services"][0]["serviceName"])
 
-    return flask.jsonify({
-        "code": 0 if oldDesiredCount>0 else 1,
-        "message": "running" if oldDesiredCount>0 else "slept"
-    })
+    if oldDesiredCount>0:
+        return {"code":200, "message":"running"}, 200
+    
+    return {"code":202, "message": "The service was slept. going to start it"}, 202
+
+@server.route("/healthz")
+def healthz():
+    return {
+        "code": 200,
+        "message": "It works"
+    }, 200
 
 def main() -> int:
     readEnvs()
