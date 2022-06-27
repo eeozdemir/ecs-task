@@ -1,3 +1,4 @@
+import logging
 import boto3
 import json
 import sys
@@ -5,7 +6,6 @@ import os
 import flask
 import time
 from threading import Thread, Lock
-import logging
 
 mutex=Lock()
 server=flask.Flask(__name__)
@@ -78,7 +78,7 @@ def scanServices() -> None:
 
     for page in pages:
         for serviceArn in page['serviceArns']:
-            logging.info(f"checking {serviceArn}")
+            server.logger.info(f"checking {serviceArn}")
             serviceName=extractServiceNameFrom(serviceArn)
             if not serviceName.startswith(servicePrefix):
                 continue
@@ -96,7 +96,7 @@ def describeService(serviceArn:str, client: any=None) -> any:
     )   
 
 def shutdown(serviceName: str) -> None:
-    logging.info(f"shutting down {serviceArnPrefix+serviceName}")
+    server.logger.info(f"shutting down {serviceArnPrefix+serviceName}")
     client=boto3.client("ecs", region_name=region)
     client.update_service(
             cluster = clusterArn,
@@ -105,7 +105,7 @@ def shutdown(serviceName: str) -> None:
         )
 
 def start(serviceName: str) -> None:
-    logging.info(f"starting {servicePrefix+serviceName}")
+    server.logger.info(f"starting {servicePrefix+serviceName}")
     client=boto3.client("ecs", region_name=region)
     client.update_service(
             cluster = clusterArn,
@@ -124,7 +124,7 @@ def workerServiceScanner() -> None:
 
 def workerIdledServiceShutdown() -> None:
     while True:
-        logging.info(json.dumps(serviceState, indent=4, default=str))
+        server.logger.info(json.dumps(serviceState, indent=4, default=str))
         for serviceName in serviceState:
             if serviceState[serviceName]["desiredCount"]==0:
                 continue
@@ -166,6 +166,8 @@ def healthz():
 
 def main() -> int:
     readEnvs()
+    server.logger.setLevel(logging.INFO)
+    server.logger.info("hello world")
     Thread(target=workerServiceScanner).start()
     server.run("0.0.0.0", port)
     return 1
