@@ -82,6 +82,8 @@ def scanServices() -> None:
             serviceName=extractServiceNameFrom(serviceArn)
             if not serviceName.startswith(servicePrefix):
                 continue
+            if serviceName.endswith("-demo"):
+                continue
             describedService = describeService(serviceArn, client)
             if not checkServiceStateConsistent(describedService):
                 addOrUpdateService(serviceName, describedService)
