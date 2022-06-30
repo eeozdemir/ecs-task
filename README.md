@@ -15,7 +15,7 @@ port | The TCP port number which application will listen on it | 80
 
 
 # How it works
-Based on `clusterArn` env it set and based on appropriate Task Role set for the task in task definition it connects to AWS ECS API server and start to looking for the services starts with `servicePrefix` string set in env. At first it assumes `idleSeconds` as a timeout for those running services (desiredCount > 0) and based on each request receives by hook route it refreshes the idle second. Right after idleSeconds exceeds this application will update the service desiredCount to zero to stop the service.
+Based on `clusterArn` env it set and based on appropriate Task Role set for the task in task definition it connects to AWS ECS API server and start to looking for the services starts with `servicePrefix` string set in env and not ending with `-demo`. At first it assumes `idleSeconds` as a timeout for those running services (desiredCount > 0) and based on each request receives by hook route it refreshes the idle second. Right after idleSeconds exceeds this application will update the service desiredCount to zero to stop the service.
 
 # API
 
