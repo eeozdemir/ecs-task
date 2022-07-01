@@ -138,6 +138,7 @@ def workerIdledServiceShutdown() -> None:
 
 @server.route("/v1/hook/<environment>/pos-worker/<posWorker>")
 def hook(environment:str, posWorker:str):
+    exemptedEnvs=["demo"]
     servicePosWorker=f"{posWorker}-{environment}" if environment != "staging" else posWorker
     serviceArn=f"{servicePrefix}-{servicePosWorker}"
     try:
@@ -146,6 +147,9 @@ def hook(environment:str, posWorker:str):
         return {"code":404, "message":"service not found"}, 404
     
     if not describedService["services"]:
+        return {"code":404, "message":"service not found"}, 404
+
+    if environment in exemptedEnvs:
         return {"code":404, "message":"service not found"}, 404
 
     oldDesiredCount=describedService["services"][0]["desiredCount"]
