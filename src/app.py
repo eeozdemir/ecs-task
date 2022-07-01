@@ -9,11 +9,11 @@ from threading import Thread, Lock
 
 mutex=Lock()
 server=flask.Flask(__name__)
-clusterArn="arn:aws:ecs:us-east-1:132248825767:cluster/hamid-testlab-staging"
-servicePrefix="pos-worker"
+clusterArn="arn:aws:ecs:eu-west-1:132248825767:cluster/ecs-cluster-githubaction"
+servicePrefix="emre-ecs-test"
 idleSeconds=10
-serviceArnPrefix="arn:aws:ecs:us-east-1:132248825767:service/hamid-testlab-staging/"
-region="us-east-1"
+serviceArnPrefix="arn:aws:ecs:eu-west-1:132248825767:service/ecs-cluster-githubaction/"
+region="eu-west-1"
 port=8080
 
 # service hash is local dictionary to keep track of services defined in ECS
